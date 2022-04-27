@@ -8,6 +8,7 @@ import { LocalStrategy } from "./strategies/local.strategy";
 import { AuthController } from "./auth.controller";
 import { UserSchema } from "../user/user.model";
 import { AuthService } from "./auth.service";
+import { HttpModule, HttpService } from "@nestjs/axios";
 
 @Module({
     imports: [MongooseModule.forFeature([{name: "User", schema: UserSchema}]), 
@@ -15,7 +16,7 @@ import { AuthService } from "./auth.service";
     JwtModule.register({
         secret: JWT_SECRET,
         signOptions: { expiresIn: '1h' },
-      })],
+      }), HttpModule],
     controllers: [AuthController],
     providers: [AuthService, LocalStrategy, JwtStrategy]
 })

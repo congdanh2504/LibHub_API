@@ -14,7 +14,12 @@ export class AuthController {
 
     @UseGuards(LocalAuthGuard)
     @Post("signin")
-    async signIn(@Request() req) {
+    async signIn(@Request() req) { 
         return this.userService.signIn(req.user);
+    }
+
+    @Post("signinwithgoogle")
+    async signInWithGoogle(@Body("idToken") idToken: string) {
+        return this.userService.signInWithGoogle(idToken);
     }
 }

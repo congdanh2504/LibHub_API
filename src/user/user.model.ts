@@ -3,9 +3,10 @@ import * as mongoose from 'mongoose'
 export const UserSchema = new mongoose.Schema({
     username: {type: String, required: true, unique: true},
     email: {type: String, required: true, unique: true},
-    password: {type: String, required: true},
+    password: {type: String, required: false},
     role: {type: String, required: true},
-    borrowingNum: {type: Number, required: true}
+    borrowingNum: {type: Number, required: true},
+    picture: {type: String, required: true}
 });
 
 UserSchema.set('toJSON', {
@@ -22,4 +23,5 @@ export class User {
     password: string;
     role: string;
     borrowingNum: number;
+    picture: string
 }
