@@ -8,7 +8,7 @@ import { LocalStrategy } from "./strategies/local.strategy";
 import { AuthController } from "./auth.controller";
 import { UserSchema } from "../user/user.model";
 import { AuthService } from "./auth.service";
-import { HttpModule, HttpService } from "@nestjs/axios";
+import { HttpModule } from "@nestjs/axios";
 
 @Module({
     imports: [MongooseModule.forFeature([{name: "User", schema: UserSchema}]), 

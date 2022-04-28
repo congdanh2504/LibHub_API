@@ -6,9 +6,10 @@ import { MONGODB_URL } from './constants';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { HttpModule } from '@nestjs/axios';
+import { BookModule } from './book/book.module';
 
 @Module({
-  imports: [MongooseModule.forRoot(MONGODB_URL), AuthModule, UserModule, HttpModule],
+  imports: [MongooseModule.forRoot(MONGODB_URL), AuthModule, UserModule, HttpModule, BookModule],
   controllers: [AppController],
   providers: [AppService],
 })
