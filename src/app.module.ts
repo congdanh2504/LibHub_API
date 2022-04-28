@@ -7,9 +7,10 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { HttpModule } from '@nestjs/axios';
 import { BookModule } from './book/book.module';
+import { GoogleDriveModule } from './googledrive/googledrive.module';
 
 @Module({
-  imports: [MongooseModule.forRoot(MONGODB_URL), AuthModule, UserModule, HttpModule, BookModule],
+  imports: [MongooseModule.forRoot(MONGODB_URL), AuthModule, UserModule, HttpModule, BookModule, GoogleDriveModule],
   controllers: [AppController],
   providers: [AppService],
 })

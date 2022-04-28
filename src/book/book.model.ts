@@ -1,5 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 import * as mongoose from 'mongoose'
+import { UserSchema } from 'src/user/user.model';
 
 export const BookSchema = new mongoose.Schema({
     name: {type: String, required: true},
@@ -8,19 +9,16 @@ export const BookSchema = new mongoose.Schema({
     publisher: {type: String, required: true},
     categories: [{type: String}],
     price: {type: Number, required: true},
-    quantity: {type: Number, required: true},
-    location: {
-        face: {type: Number, required: true},
-        column: {type: Number, required: true},
-        row: {type: Number, required: true}
+    quantity: {type: Number, required: false},
+    location: { 
+        face: Number,
+        column: Number,
+        row: Number
     },
-    avgRate: {type: Number, required: true},
+    picture: {type: String, required: true},
+    avgRate: {type: Number, required: false},
     reviews: [{
-        user : {
-            id: {type: String, required: true},
-            username: {type: String, required: true},
-            picture: {type: String, required: true}
-        },
+        user : {type: UserSchema, required: true},
         rate: {type: Number, required: true},
         comment: {type: String, required: true}
     }],
@@ -43,14 +41,13 @@ export class Book {
     @IsNotEmpty()
     price: number;
     @IsNotEmpty()
+    picture: string;
     quantity: number;
-    @IsNotEmpty()
     location: {
         face: number,
         column: number,
         row: number
     };
-    @IsNotEmpty()
     avgRate: number;
     reviews: [{
         user : {
