@@ -1,14 +1,14 @@
 import { IsNotEmpty } from 'class-validator';
 import * as mongoose from 'mongoose'
-import { UserSchema } from 'src/user/user.model';
+import { User, UserSchema } from 'src/user/user.model';
 
 export const BookSchema = new mongoose.Schema({
     name: {type: String, required: true},
     description: {type: String, required: true},
     author: {type: String, required: true},
     publisher: {type: String, required: true},
-    categories: [{type: String}],
-    price: {type: Number, required: true},
+    categories: {type: [String], required: false},
+    price: {type: Number, required: false},
     quantity: {type: Number, required: false},
     location: { 
         face: Number,
@@ -18,16 +18,17 @@ export const BookSchema = new mongoose.Schema({
     picture: {type: String, required: true},
     avgRate: {type: Number, required: false},
     reviews: [{
-        user : {type: UserSchema, required: true},
-        rate: {type: Number, required: true},
-        comment: {type: String, required: true}
+        user : {type: UserSchema, required: false},
+        rate: {type: Number, required: false},
+        comment: {type: String, required: false}
     }],
     type: {type: String, required: true},
-    publishYear: {type: Number, required: true}
+    publishYear: {type: Number, required: true},
+    requester: {type: UserSchema, required: false}
 });
 
 export class Book {
-    _id: string;
+    id: string;
     @IsNotEmpty()
     name: string;
     @IsNotEmpty()
@@ -42,7 +43,9 @@ export class Book {
     price: number;
     @IsNotEmpty()
     picture: string;
+    @IsNotEmpty()
     quantity: number;
+    @IsNotEmpty()
     location: {
         face: number,
         column: number,
@@ -50,11 +53,7 @@ export class Book {
     };
     avgRate: number;
     reviews: [{
-        user : {
-            id: string,
-            username: string,
-            picture: string
-        },
+        user : User,
         rate: number,
         comment: string
     }];
@@ -62,4 +61,23 @@ export class Book {
     type: string;
     @IsNotEmpty()
     publishYear: number;
+}
+
+export class RequestedBook {
+    id: string;
+    @IsNotEmpty()
+    name: string;
+    @IsNotEmpty()
+    description: string;
+    @IsNotEmpty()
+    author: string;
+    @IsNotEmpty()
+    publisher: string;
+    @IsNotEmpty()
+    picture: string;
+    @IsNotEmpty()
+    type: string;
+    @IsNotEmpty()
+    publishYear: number;
+    requester: User
 }
