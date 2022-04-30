@@ -10,7 +10,7 @@ export class BookService {
     constructor(@InjectModel("Book") private readonly bookModel: Model<Book>) {}
 
     async getAllBooks() {
-        return await this.bookModel.find({ type: "available" });
+        return await this.bookModel.find({ type: "available" }).populate("reviews.user");
     }
 
     async getBookById(id: string) {
@@ -67,11 +67,11 @@ export class BookService {
         return await this.bookModel.findById(id).remove();
     }
 
-    async addReview(dto: ReviewDto, user: User) {
+    async addReview(dto: ReviewDto, userId: string) {
         const book = await this.bookModel.findById(dto.bookId);
         book.avgRate = ((book.avgRate*book.reviews.length) + dto.rate) / (book.reviews.length + 1);
         book.reviews.push({
-            user: user,
+            user: userId,
             comment: dto.comment,
             rate: dto.rate
         });
