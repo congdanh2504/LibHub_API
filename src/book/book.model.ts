@@ -1,4 +1,4 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, Min } from 'class-validator';
 import * as mongoose from 'mongoose'
 
 export const BookSchema = new mongoose.Schema({
@@ -6,9 +6,9 @@ export const BookSchema = new mongoose.Schema({
     description: {type: String, required: true},
     author: {type: String, required: true},
     publisher: {type: String, required: true},
-    categories: {type: [String], required: false},
+    categories: [{type: mongoose.Schema.Types.ObjectId, ref: "Category", required: false}],
     price: {type: Number, required: false},
-    quantity: {type: Number, required: false},
+    quantity: {type: Number, required: false, min: 0},
     location: { 
         face: Number,
         column: Number,
@@ -37,12 +37,13 @@ export class Book {
     @IsNotEmpty()
     publisher: string;
     @IsNotEmpty()
-    categories: [{type: string}];
+    categories: [string];
     @IsNotEmpty()
     price: number;
     @IsNotEmpty()
     picture: string;
     @IsNotEmpty()
+    @Min(1)
     quantity: number;
     @IsNotEmpty()
     location: {
@@ -56,7 +57,6 @@ export class Book {
         rate: number,
         comment: string
     }];
-    @IsNotEmpty()
     type: string;
     @IsNotEmpty()
     publishYear: number;

@@ -36,4 +36,8 @@ export class UserService {
     async getUserRecord(userId: string) {
         return this.borrowerRecordService.getUserRecord(userId);
     }
+
+    async returnBook(recordId: string, userId: string) {                          
+        return this.borrowerRecordService.return(recordId, userId);
+    }
 }

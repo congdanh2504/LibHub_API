@@ -1,13 +1,15 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Book, RequestedBook } from "./book.model";
 import { Model } from "mongoose";
 import { ReviewDto } from "./review.dto";
 import { User } from "src/user/user.model";
+import { CategoryService } from "src/category/category.service";
 
 @Injectable()
 export class BookService {
-    constructor(@InjectModel("Book") private readonly bookModel: Model<Book>) {}
+    constructor(@InjectModel("Book") private readonly bookModel: Model<Book>,
+    private readonly categoryService: CategoryService) {}
 
     async getAllBooks() {
         return await this.bookModel.find({ type: "available" }).populate("reviews.user");
@@ -34,10 +36,12 @@ export class BookService {
             },
             avgRate: book.avgRate,
             reviews: [],
-            type: book.type,
+            type: "available",
             publishYear: book.publishYear
         });
         const result = await newBook.save();
+        for (let i=0; i<book.categories.length; ++i) 
+            await this.categoryService.addBookToCategory(book.categories[i], result.id);
         return result.id;
     }
 
@@ -94,5 +98,17 @@ export class BookService {
         result.reviews = undefined;
         await result.save();
         return result.id;
+    }
+
+    async checkQuantity(bookId: string, num: number) {
+        const book = await this.bookModel.findById(bookId);
+        if (book.quantity < num) return false;
+        return true;
+    }
+
+    async editQuantity(bookId: string, num: number) {
+        const book = await this.bookModel.findById(bookId);
+        book.quantity = book.quantity - num;
+        await book.save();
     }
 }
