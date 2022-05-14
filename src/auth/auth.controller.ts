@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Request, UseGuards } from "@nestjs/common";
+import { Body, Controller, Param, Post, Request, UseGuards } from "@nestjs/common";
 import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { AuthDto } from "./auth.dto";
 import { AuthService } from "./auth.service";
@@ -18,8 +18,8 @@ export class AuthController {
         return this.userService.signIn(req.user);
     }
 
-    @Post("signinwithgoogle")
-    async signInWithGoogle(@Body("idToken") idToken: string) {
-        return this.userService.signInWithGoogle(idToken);
+    @Post("signinwithgoogle/:idToken")
+    async signInWithGoogle(@Param() param: any) {
+        return this.userService.signInWithGoogle(param.idToken);
     }
 }

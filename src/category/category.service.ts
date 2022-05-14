@@ -7,19 +7,21 @@ import { Model } from "mongoose";
 export class CategoryService {
     constructor(@InjectModel("Category") private readonly categoryModel: Model<Category>) {}
 
+    async getAllCategories() {
+        return await this.categoryModel.find();
+    }
+
     async addCategory(category: Category) {
         const newCategory = new this.categoryModel({
             name: category.name,
-            books: [],
             picture: category.picture
         });
         const result = await newCategory.save();
         return result.id;
     }
 
-    async addBookToCategory(categoryId: string, bookId: string) {
+    async addBookToCategory(categoryId: string) {
         const category = await this.categoryModel.findById(categoryId);
-        category.books.push(bookId);
         await category.save();
     }
 }

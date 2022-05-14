@@ -16,10 +16,10 @@ export class BorrowerRecordService {
             status: "pending"
         });
         for (let i = 0; i<dto.books.length; ++i) {
-            if (!(await this.bookService.checkQuantity(dto.books[i].id, dto.books[i].quantity))) throw new BadRequestException();
+            if (!(await this.bookService.checkQuantity(dto.books[i].book, dto.books[i].quantity))) throw new BadRequestException();
         }   
         dto.books.forEach((book) => {
-            this.bookService.editQuantity(book.id, book.quantity);
+            this.bookService.editQuantity(book.book, book.quantity);
         });
         const result = await newRecord.save();
         return result.id;
@@ -34,6 +34,9 @@ export class BorrowerRecordService {
         record.status = "borrowing";
         record.createdDate = new Date(Date.now());
         record.returnDate = new Date(Date.now() + 3600 * 1000 * 24 * 7);
+        for (let i = 0; i < record.books.length; ++i) {
+            this.bookService.increaseBorrowedNum(record.books[i].book);
+        }
         const result = await record.save();
         return result.id;
     }

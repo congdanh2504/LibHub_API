@@ -12,7 +12,7 @@ export class BookService {
     private readonly categoryService: CategoryService) {}
 
     async getAllBooks() {
-        return await this.bookModel.find({ type: "available" }).populate("reviews.user");
+        return await this.bookModel.find({ type: "available" }).populate("reviews.user").populate("category");
     }
 
     async getBookById(id: string) {
@@ -25,7 +25,7 @@ export class BookService {
             description: book.description,
             author: book.author,
             publisher: book.publisher,
-            categories: book.categories,
+            category: book.category,
             price: book.price,
             quantity: book.quantity,
             picture: book.picture,
@@ -40,8 +40,6 @@ export class BookService {
             publishYear: book.publishYear
         });
         const result = await newBook.save();
-        for (let i=0; i<book.categories.length; ++i) 
-            await this.categoryService.addBookToCategory(book.categories[i], result.id);
         return result.id;
     }
 
@@ -52,7 +50,7 @@ export class BookService {
                 description: book.description,
                 author: book.author,
                 publisher: book.publisher,
-                categories: book.categories,
+                category: book.category,
                 price: book.price,
                 quantity: book.quantity,
                 picture: book.picture,
@@ -94,7 +92,7 @@ export class BookService {
             requester: user
         });
         const result = await newBook.save();
-        result.categories = undefined;
+        result.category = undefined;
         result.reviews = undefined;
         await result.save();
         return result.id;
@@ -110,5 +108,31 @@ export class BookService {
         const book = await this.bookModel.findById(bookId);
         book.quantity = book.quantity - num;
         await book.save();
+    }
+
+    async increaseBorrowedNum(bookId: string) {
+        const book = await this.bookModel.findById(bookId);
+        book.borrowedNum = book.borrowedNum + 1;
+        await book.save();
+    }
+
+    async getDiscover() {
+        const discover = [];
+        const topTenAvgRate = await this.bookModel.find({
+            type: "available"
+        }).sort({avgRate: -1}).limit(10).populate("reviews.user").populate("category");
+        discover.push(topTenAvgRate);
+
+        const topTenBorrowedNum = await this.bookModel.find({
+            type: "available"
+        }).sort({borrowedNum: -1}).limit(10).populate("reviews.user").populate("category");
+        discover.push(topTenBorrowedNum);
+
+        const topTenReviews = await this.bookModel.find({
+            type: "available"
+        }).sort({reviews: -1}).limit(10).populate("reviews.user").populate("category");
+        discover.push(topTenReviews);
+
+        return discover
     }
 }

@@ -15,7 +15,7 @@ import { HttpModule } from "@nestjs/axios";
     PassportModule, 
     JwtModule.register({
         secret: JWT_SECRET,
-        signOptions: { expiresIn: '1h' },
+        signOptions: { expiresIn: '30d' },
       }), HttpModule],
     controllers: [AuthController],
     providers: [AuthService, LocalStrategy, JwtStrategy]

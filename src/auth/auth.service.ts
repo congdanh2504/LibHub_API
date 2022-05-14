@@ -39,9 +39,7 @@ export class AuthService {
 
     async signIn(user: User) {
         const payload = { username: user.username, id: user.id, email: user.email, role: user.role };
-        return {
-          access_token: this.jwtService.sign(payload),
-        };
+        return this.jwtService.sign(payload);
     }
 
     async signInWithGoogle(idToken: string) {

@@ -6,13 +6,17 @@ export const BookSchema = new mongoose.Schema({
     description: {type: String, required: true},
     author: {type: String, required: true},
     publisher: {type: String, required: true},
-    categories: [{type: mongoose.Schema.Types.ObjectId, ref: "Category", required: false}],
+    category: {type: mongoose.Schema.Types.ObjectId, ref: "Category", required: false},
     price: {type: Number, required: false},
     quantity: {type: Number, required: false, min: 0},
     location: { 
         face: Number,
         column: Number,
         row: Number
+    },
+    borrowedNum : {
+        type: Number,
+        default: 0,
     },
     picture: {type: String, required: true},
     avgRate: {type: Number, required: false},
@@ -27,7 +31,7 @@ export const BookSchema = new mongoose.Schema({
 });
 
 export class Book {
-    id: string;
+    _id: string;
     @IsNotEmpty()
     name: string;
     @IsNotEmpty()
@@ -37,7 +41,7 @@ export class Book {
     @IsNotEmpty()
     publisher: string;
     @IsNotEmpty()
-    categories: [string];
+    category: string;
     @IsNotEmpty()
     price: number;
     @IsNotEmpty()
@@ -51,6 +55,7 @@ export class Book {
         column: number,
         row: number
     };
+    borrowedNum: number;
     avgRate: number;
     reviews: [{
         user : string,
@@ -63,7 +68,7 @@ export class Book {
 }
 
 export class RequestedBook {
-    id: string;
+    _id: string;
     @IsNotEmpty()
     name: string;
     @IsNotEmpty()

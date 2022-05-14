@@ -11,8 +11,14 @@ export class BookController {
         return this.bookService.getAllBooks();
     }
 
+    @Get("discover")
+    getDiscover() {
+        return this.bookService.getDiscover()
+    }
+
     @Get(":id")
     getBookById(@Param() param: any) {
         return this.bookService.getBookById(param.id);
     }
+    
 }
