@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
+import { query } from "express";
 import { BorrowerRecordService } from "src/borrower-record/borrowerrecord.service";
 import { BookService } from "./book.service";
 
@@ -11,6 +12,16 @@ export class BookController {
         return this.bookService.getAllBooks();
     }
 
+    @Get("search")
+    search(@Query() query: any) {
+        return this.bookService.search(query.query);
+    }
+
+    @Get("category/:categoryId")
+    getBooksByCategory(@Param() param: any) {
+        return this.bookService.getBooksByCategory(param.categoryId);
+    }
+
     @Get("discover")
     getDiscover() {
         return this.bookService.getDiscover()
@@ -20,5 +31,6 @@ export class BookController {
     getBookById(@Param() param: any) {
         return this.bookService.getBookById(param.id);
     }
+    
     
 }

@@ -1,11 +1,12 @@
 import * as mongoose from 'mongoose'
 
 export const UserSchema = new mongoose.Schema({
-    username: {type: String, required: true, unique: true},
+    username: {type: String, required: true},
     email: {type: String, required: true, unique: true},
     password: {type: String, required: false},
     role: {type: String, required: true},
-    borrowingNum: {type: Number, required: true},
+    currentPackage: {type: mongoose.Schema.Types.ObjectId, ref: "Package"},
+    expiration: {type: Date},
     picture: {type: String, required: true}
 });
 

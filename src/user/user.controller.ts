@@ -17,9 +17,9 @@ export class UserController {
         return this.userService.getProfile(req.user.id);
     }
 
-    @Post("addreview")
-    addReview(@Body() dto: ReviewDto, @Request() req) {
-        return this.userService.addReview(dto, req.user.id);
+    @Post("addreview/:bookId")
+    addReview(@Body() dto: ReviewDto,@Param() param: any, @Request() req) {
+        return this.userService.addReview(dto, req.user.id, param.bookId);
     }
 
     @Post("addrequestedbook")

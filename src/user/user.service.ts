@@ -20,8 +20,8 @@ export class UserService {
         return await this.userModel.findById(id);
     }
     
-    async addReview(dto: ReviewDto, userId: string) {
-        return this.bookService.addReview(dto, userId);
+    async addReview(dto: ReviewDto, userId: string, bookId: string) {
+        return this.bookService.addReview(dto, userId, bookId);
     }
 
     async addRequestedBook(dto: RequestedBook, userId: string) {

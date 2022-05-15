@@ -7,13 +7,16 @@ import { BookService } from "src/book/book.service";
 import { BorrowerRecordService } from "src/borrower-record/borrowerrecord.service";
 import { Category } from "src/category/category.model";
 import { CategoryService } from "src/category/category.service";
+import { Package } from "src/package/package.model";
+import { PackageService } from "src/package/package.service";
 
 @Controller("admin")
 @UseGuards(JwtAuthGuard, RoleGuard(Role.Admin))
 export class AdminController {
     constructor(private readonly bookService: BookService,
         private readonly borrowerRecordService: BorrowerRecordService,
-        private readonly categoryService: CategoryService) {}
+        private readonly categoryService: CategoryService,
+        private readonly packageService: PackageService) {}
 
     @Post("book")
     addBook(@Body() book: Book) {
@@ -43,5 +46,10 @@ export class AdminController {
     @Post("category")
     addCategory(@Body() category: Category) {
         return this.categoryService.addCategory(category);
+    }
+
+    @Post("package")
+    addPackage(@Body() pack: Package) {
+        return this.packageService.addPackage(pack);
     }
 }

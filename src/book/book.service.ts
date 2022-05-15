@@ -5,6 +5,7 @@ import { Model } from "mongoose";
 import { ReviewDto } from "./review.dto";
 import { User } from "src/user/user.model";
 import { CategoryService } from "src/category/category.service";
+import console from "console";
 
 @Injectable()
 export class BookService {
@@ -15,8 +16,12 @@ export class BookService {
         return await this.bookModel.find({ type: "available" }).populate("reviews.user").populate("category");
     }
 
+    async getBooksByCategory(categoryId: string) {
+        return await this.bookModel.find({ type: "available", category: categoryId}).populate("reviews.user").populate("category");
+    }
+
     async getBookById(id: string) {
-        return await this.bookModel.findById(id);
+        return await this.bookModel.findById(id).populate("reviews.user").populate("category");
     }
 
     async addBook(book: Book) {
@@ -69,8 +74,8 @@ export class BookService {
         return await this.bookModel.findById(id).remove();
     }
 
-    async addReview(dto: ReviewDto, userId: string) {
-        const book = await this.bookModel.findById(dto.bookId);
+    async addReview(dto: ReviewDto, userId: string, bookId: string) {
+        const book = await this.bookModel.findById(bookId);
         book.avgRate = ((book.avgRate*book.reviews.length) + dto.rate) / (book.reviews.length + 1);
         book.reviews.push({
             user: userId,
@@ -134,5 +139,25 @@ export class BookService {
         discover.push(topTenReviews);
 
         return discover
+    }
+
+    async search(query: String) {
+        const words = query.split(" ");
+        const set = new Set([]);
+        
+        for (let i=0; i<words.length; ++i) {
+            const temp = await this.bookModel.find({type: "available"})
+            .find({ $or:[ {nameLower: { $regex: '.*' + words[i] + '.*' } }, 
+            {authorLower: { $regex: '.*' + words[i] + '.*'}}]});
+            for (let j=0; j<temp.length; ++j) {
+                set.add(temp[j].id);
+            }
+        }
+        const res = [];
+        for (var id of set) {
+            const book = await this.bookModel.findById(id).populate("reviews.user").populate("category");
+            res.push(book)
+        }
+        return res;
     }
 }

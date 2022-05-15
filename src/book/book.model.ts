@@ -3,8 +3,10 @@ import * as mongoose from 'mongoose'
 
 export const BookSchema = new mongoose.Schema({
     name: {type: String, required: true},
+    nameLower: {type: String, required: true},
     description: {type: String, required: true},
     author: {type: String, required: true},
+    authorLower: {type: String, required: true},
     publisher: {type: String, required: true},
     category: {type: mongoose.Schema.Types.ObjectId, ref: "Category", required: false},
     price: {type: Number, required: false},
@@ -29,6 +31,14 @@ export const BookSchema = new mongoose.Schema({
     publishYear: {type: Number, required: true},
     requester: {type: mongoose.Schema.Types.ObjectId, ref: "User", required: false}
 });
+
+BookSchema.set('toJSON', {
+    transform: function(doc, ret, opt) {
+        delete ret['authorLower']
+        delete ret['nameLower']
+        return ret
+    }
+})
 
 export class Book {
     _id: string;
