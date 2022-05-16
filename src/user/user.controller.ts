@@ -37,8 +37,13 @@ export class UserController {
         return this.userService.getUserRecord(req.user.id);
     }
 
-    @Post("returnbook/:id")
+    @Post("returnbook/:bookId")
     returnBook(@Param() param: any, @Request() req) {
-        return this.userService.returnBook(param.id, req.user.id);
+        return this.userService.returnBook(param.bookId, req.user.id);
+    }
+
+    @Post("buypackage/:packageId")
+    buyPackage(@Param() param: any, @Request() req) {
+        return this.userService.buyPackage(param.packageId, req.user.id);
     }
 }

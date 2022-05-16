@@ -23,6 +23,7 @@ export interface User {
     email: string;
     password: string;
     role: string;
-    borrowingNum: number;
+    currentPackage: string;
+    expiration: Date;
     picture: string
 }

@@ -33,7 +33,8 @@ export class BorrowerRecordService {
         const record = await this.borrowerRecordModel.findById(recordId);
         record.status = "borrowing";
         record.createdDate = new Date(Date.now());
-        record.returnDate = new Date(Date.now() + 3600 * 1000 * 24 * 7);
+        const timeOfOneDay = 3600 * 1000 * 24;
+        record.returnDate = new Date(Date.now() + timeOfOneDay * 7);
         for (let i = 0; i < record.books.length; ++i) {
             this.bookService.increaseBorrowedNum(record.books[i].book);
         }

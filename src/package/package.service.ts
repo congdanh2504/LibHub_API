@@ -11,6 +11,10 @@ export class PackageService {
         return await this.packageModel.find();
     }
 
+    async getPackageById(packageId: string) {
+        return await this.packageModel.findById(packageId);
+    }
+
     async addPackage(pack: Package) {
         const newPack = new this.packageModel({
             name: pack.name,

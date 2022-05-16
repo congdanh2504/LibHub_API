@@ -13,15 +13,30 @@ export class BookService {
     private readonly categoryService: CategoryService) {}
 
     async getAllBooks() {
-        return await this.bookModel.find({ type: "available" }).populate("reviews.user").populate("category");
+        return await this.bookModel.find({ type: "available" }).populate({
+            path: "reviews.user",
+            populate: {
+                path: "currentPackage"
+            }
+        }).populate("category");
     }
 
     async getBooksByCategory(categoryId: string) {
-        return await this.bookModel.find({ type: "available", category: categoryId}).populate("reviews.user").populate("category");
+        return await this.bookModel.find({ type: "available", category: categoryId}).populate({
+            path: "reviews.user",
+            populate: {
+                path: "currentPackage"
+            }
+        }).populate("category");
     }
 
     async getBookById(id: string) {
-        return await this.bookModel.findById(id).populate("reviews.user").populate("category");
+        return await this.bookModel.findById(id).populate({
+            path: "reviews.user",
+            populate: {
+                path: "currentPackage"
+            }
+        }).populate("category");
     }
 
     async addBook(book: Book) {
@@ -125,17 +140,32 @@ export class BookService {
         const discover = [];
         const topTenAvgRate = await this.bookModel.find({
             type: "available"
-        }).sort({avgRate: -1}).limit(10).populate("reviews.user").populate("category");
+        }).sort({avgRate: -1}).limit(10).populate({
+            path: "reviews.user",
+            populate: {
+                path: "currentPackage"
+            }
+        }).populate("category");
         discover.push(topTenAvgRate);
 
         const topTenBorrowedNum = await this.bookModel.find({
             type: "available"
-        }).sort({borrowedNum: -1}).limit(10).populate("reviews.user").populate("category");
+        }).sort({borrowedNum: -1}).limit(10).populate({
+            path: "reviews.user",
+            populate: {
+                path: "currentPackage"
+            }
+        }).populate("category");
         discover.push(topTenBorrowedNum);
 
         const topTenReviews = await this.bookModel.find({
             type: "available"
-        }).sort({reviews: -1}).limit(10).populate("reviews.user").populate("category");
+        }).sort({reviews: -1}).limit(10).populate({
+            path: "reviews.user",
+            populate: {
+                path: "currentPackage"
+            }
+        }).populate("category");
         discover.push(topTenReviews);
 
         return discover
@@ -155,7 +185,12 @@ export class BookService {
         }
         const res = [];
         for (var id of set) {
-            const book = await this.bookModel.findById(id).populate("reviews.user").populate("category");
+            const book = await this.bookModel.findById(id).populate({
+                path: "reviews.user",
+                populate: {
+                    path: "currentPackage"
+                }
+            }).populate("category");
             res.push(book)
         }
         return res;
