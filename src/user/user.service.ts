@@ -82,4 +82,7 @@ export class UserService {
         await user.save() 
     }
         
+    async getBorrowingBooks(userId: string) {
+        return this.borrowerRecordService.getBorrowingBooks(userId);
+    }
 }

@@ -17,7 +17,7 @@ export class BorrowerRecordService {
         const newRecord = new this.borrowerRecordModel({
             user: userId,
             books: dto,
-            status: "Pending"
+            status: "Pending confirm"
         });
         for (let i = 0; i<dto.length; ++i) {
             if (!(await this.bookService.checkQuantity(dto[i].id, dto[i].quantity))) throw new BadRequestException();
@@ -49,7 +49,7 @@ export class BorrowerRecordService {
     async return(recordId: string, userId) {
         const record = await this.borrowerRecordModel.findById(recordId);
         if (record.user != userId) throw new BadRequestException();
-        record.status = "Return pending";
+        record.status = "Pending return";
         const result = await record.save();
         return result.id;
     }
@@ -59,5 +59,35 @@ export class BorrowerRecordService {
         record.status = "Returned";
         const result = await record.save();
         return result.id;
+    }
+
+    async getBorrowingBooks(userId: string) {
+        return await this.borrowerRecordModel.findOne({ user: userId, $or : [
+            {
+                status: "Pending confirm"
+            },
+            {
+                status: "Borrowing"
+            },
+            {
+                status: "Pending return"
+            }
+        ]}).populate({
+            path: "books.book",
+            populate: [{
+                path: "reviews.user",
+                populate: {
+                    path: "currentPackage"
+                }
+            },
+            {
+                path: "category"
+            }]
+        }).populate({
+            path: "user",
+            populate: {
+                path: "currentPackage"
+            }
+        });
     }
 }

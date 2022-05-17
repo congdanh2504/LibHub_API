@@ -51,4 +51,9 @@ export class UserController {
     buyPackage(@Param() param: any, @Request() req) {
         return this.userService.buyPackage(param.packageId, req.user.id);
     }
+
+    @Get("borrowingbooks")
+    getBorrowingBooks(@Request() req) {
+        return this.userService.getBorrowingBooks(req.user.id);
+    }
 }
