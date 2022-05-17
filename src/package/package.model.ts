@@ -6,7 +6,8 @@ export const PackageSchema = new mongoose.Schema({
     price: {type: Number, required: true},
     time: {type: Number, required: true},
     benefit: {type: String, required: true},
-    booksPerLoan: {type: Number, required: true}
+    booksPerLoan: {type: Number, required: true},
+    borrowDays: {type: Number, required: true}
 });
 
 export class Package {
@@ -23,4 +24,7 @@ export class Package {
     benefit: string;
     @IsNotEmpty()
     booksPerLoan: number;
+    @IsNumber()
+    @IsNotEmpty()
+    borrowDays: number;
 }

@@ -9,6 +9,7 @@ import { Category } from "src/category/category.model";
 import { CategoryService } from "src/category/category.service";
 import { Package } from "src/package/package.model";
 import { PackageService } from "src/package/package.service";
+import { UserService } from "src/user/user.service";
 
 @Controller("admin")
 @UseGuards(JwtAuthGuard, RoleGuard(Role.Admin))
@@ -16,7 +17,8 @@ export class AdminController {
     constructor(private readonly bookService: BookService,
         private readonly borrowerRecordService: BorrowerRecordService,
         private readonly categoryService: CategoryService,
-        private readonly packageService: PackageService) {}
+        private readonly packageService: PackageService,
+        private readonly userService: UserService) {}
 
     @Post("book")
     addBook(@Body() book: Book) {
@@ -39,7 +41,8 @@ export class AdminController {
     }
 
     @Patch("confirmreturn/:id")
-    confirmReturnRecord(@Param() param: any) {
+    async confirmReturnRecord(@Param() param: any) {
+        await this.userService.setIsBorrowing(param.id, false);
         return this.borrowerRecordService.confirmReturn(param.id);
     }
 

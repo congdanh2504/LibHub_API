@@ -5,7 +5,6 @@ import { Model } from "mongoose";
 import { ReviewDto } from "./review.dto";
 import { User } from "src/user/user.model";
 import { CategoryService } from "src/category/category.service";
-import console from "console";
 
 @Injectable()
 export class BookService {

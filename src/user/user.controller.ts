@@ -4,7 +4,7 @@ import Role from "src/auth/guards/role.enum";
 import RoleGuard from "src/auth/guards/role.guard";
 import { RequestedBook } from "src/book/book.model";
 import { ReviewDto } from "src/book/review.dto";
-import { BorrowerRecord } from "src/borrower-record/borrowerrecord.model";
+import { BorrowerRecord, BorrowRecordDto } from "src/borrower-record/borrowerrecord.model";
 import { UserService } from "./user.service";
 
 @UseGuards(JwtAuthGuard, RoleGuard(Role.User))
@@ -27,8 +27,13 @@ export class UserController {
         return this.userService.addRequestedBook(dto, req.user.id);
     }
 
+    @Post("checkquantity")
+    checkQuantity(@Body() dto: [BorrowRecordDto]) {
+        return this.userService.checkQuantity(dto);
+    }
+
     @Post("borrowbook")
-    borrowBook(@Body() dto: BorrowerRecord, @Request() req) {
+    borrowBook(@Body() dto: [BorrowRecordDto], @Request() req) {
         return this.userService.borrowBook(dto, req.user.id);
     }
 
@@ -37,9 +42,9 @@ export class UserController {
         return this.userService.getUserRecord(req.user.id);
     }
 
-    @Post("returnbook/:bookId")
+    @Post("returnbook/:recordId")
     returnBook(@Param() param: any, @Request() req) {
-        return this.userService.returnBook(param.bookId, req.user.id);
+        return this.userService.returnBook(param.recordId, req.user.id);
     }
 
     @Post("buypackage/:packageId")

@@ -1,25 +1,29 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { BorrowerRecord } from "./borrowerrecord.model";
+import { BorrowerRecord, BorrowRecordDto } from "./borrowerrecord.model";
 import { Model } from "mongoose";
 import { BookService } from "src/book/book.service";
+import { UserService } from "src/user/user.service";
 
 @Injectable()
 export class BorrowerRecordService {
     constructor(@InjectModel("BorrowerRecord") private readonly borrowerRecordModel: Model<BorrowerRecord>,
     private readonly bookService: BookService) {}
 
-    async addRecord(dto: BorrowerRecord, userId: string) {
+    async addRecord(dto: [BorrowRecordDto], userId: string) {
+        for (let i=0; i<dto.length; ++i) {
+            dto[i].book = dto[i].id;
+        }
         const newRecord = new this.borrowerRecordModel({
             user: userId,
-            books: dto.books,
-            status: "pending"
+            books: dto,
+            status: "Pending"
         });
-        for (let i = 0; i<dto.books.length; ++i) {
-            if (!(await this.bookService.checkQuantity(dto.books[i].book, dto.books[i].quantity))) throw new BadRequestException();
+        for (let i = 0; i<dto.length; ++i) {
+            if (!(await this.bookService.checkQuantity(dto[i].id, dto[i].quantity))) throw new BadRequestException();
         }   
-        dto.books.forEach((book) => {
-            this.bookService.editQuantity(book.book, book.quantity);
+        dto.forEach((book) => {
+            this.bookService.editQuantity(book.id, book.quantity);
         });
         const result = await newRecord.save();
         return result.id;
@@ -31,7 +35,7 @@ export class BorrowerRecordService {
 
     async confirmBorrow(recordId: string) {
         const record = await this.borrowerRecordModel.findById(recordId);
-        record.status = "borrowing";
+        record.status = "Borrowing";
         record.createdDate = new Date(Date.now());
         const timeOfOneDay = 3600 * 1000 * 24;
         record.returnDate = new Date(Date.now() + timeOfOneDay * 7);
@@ -45,14 +49,14 @@ export class BorrowerRecordService {
     async return(recordId: string, userId) {
         const record = await this.borrowerRecordModel.findById(recordId);
         if (record.user != userId) throw new BadRequestException();
-        record.status = "return pending";
+        record.status = "Return pending";
         const result = await record.save();
         return result.id;
     }
 
     async confirmReturn(recordId: string) {
         const record = await this.borrowerRecordModel.findById(recordId);
-        record.status = "returned";
+        record.status = "Returned";
         const result = await record.save();
         return result.id;
     }

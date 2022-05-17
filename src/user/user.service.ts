@@ -4,7 +4,7 @@ import { Model } from "mongoose";
 import { RequestedBook } from "src/book/book.model";
 import { BookService } from "src/book/book.service";
 import { ReviewDto } from "src/book/review.dto";
-import { BorrowerRecord } from "src/borrower-record/borrowerrecord.model";
+import { BorrowerRecord, BorrowRecordDto } from "src/borrower-record/borrowerrecord.model";
 import { BorrowerRecordService } from "src/borrower-record/borrowerrecord.service";
 import { PackageService } from "src/package/package.service";
 import { User } from "./user.model";
@@ -31,8 +31,29 @@ export class UserService {
         return this.bookService.addRequestedBook(dto, user);
     }
 
-    async borrowBook(dto: BorrowerRecord, userId: string) {                          
+    async checkQuantity(dto: [BorrowRecordDto]) {
+        for (let i = 0; i<dto.length; ++i) {
+            if (!(await this.bookService.checkQuantity(dto[i].id, dto[i].quantity))) return false;
+        } 
+        return true
+    }
+
+    async borrowBook(dto: [BorrowRecordDto], userId: string) { 
+        await this.validate(dto, userId);
+        await this.setIsBorrowing(userId, true);                       
         return this.borrowerRecordService.addRecord(dto, userId);
+    }
+
+    async validate(dto: [BorrowRecordDto], userId: string) {
+        const user = await this.userModel.findById(userId);
+        const currentPackage = await this.packageService.getPackageById(user.currentPackage);
+        var quantitySum = 0;
+        dto.forEach(value => {
+            quantitySum += value.quantity
+        });
+        if (quantitySum > currentPackage.booksPerLoan) throw new BadRequestException();
+        if (user.expiration == null || user.expiration < new Date(Date.now())) throw new BadRequestException();
+        if (user.isBorrowing) throw new BadRequestException();
     }
 
     async getUserRecord(userId: string) {
@@ -53,6 +74,12 @@ export class UserService {
         user.currentPackage = packageId;
         user.expiration = new Date(Date.now() + packageInfo.time *30*timeOfOneDay)
         await user.save();
+    }
+
+    async setIsBorrowing(userId: string, state: boolean) {
+        const user = await this.userModel.findById(userId);
+        user.isBorrowing = state;
+        await user.save() 
     }
         
 }

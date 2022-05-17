@@ -20,3 +20,9 @@ export class BorrowerRecord {
     returnDate: Date;
     status: string
 }
+
+export class BorrowRecordDto {
+    id: string;
+    book: string;
+    quantity: number;
+}

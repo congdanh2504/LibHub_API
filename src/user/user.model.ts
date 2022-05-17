@@ -7,6 +7,7 @@ export const UserSchema = new mongoose.Schema({
     role: {type: String, required: true},
     currentPackage: {type: mongoose.Schema.Types.ObjectId, ref: "Package"},
     expiration: {type: Date},
+    isBorrowing: {type: Boolean, default: false},
     picture: {type: String, required: true}
 });
 
@@ -25,5 +26,6 @@ export interface User {
     role: string;
     currentPackage: string;
     expiration: Date;
+    isBorrowing: Boolean;
     picture: string
 }
