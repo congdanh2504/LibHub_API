@@ -1,12 +1,21 @@
-import { Body, Controller, Get, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { GoogleDriveService } from './googledrive/googledrive.service';
 import { extname } from 'path'
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { UserService } from './user/user.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: GoogleDriveService) {}
+  constructor(private readonly appService: GoogleDriveService, 
+    private readonly userService: UserService) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Get("profile")
+  getProfile(@Request() req) {
+      return this.userService.getProfile(req.user.id);
+  }
 
   @Post("getPicture")
   @UseInterceptors(FileInterceptor("file", {

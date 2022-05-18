@@ -182,7 +182,6 @@ export class BookService {
                 set.add(temp[j].id);
             }
         }
-        console.log(set)
         const res = [];
         for (var id of set) {
             const book = await this.getBookById(id);
