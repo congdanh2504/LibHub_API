@@ -56,4 +56,9 @@ export class UserController {
     getBorrowingBooks(@Request() req) {
         return this.userService.getBorrowingBooks(req.user.id);
     }
+
+    @Get("recentbooks")
+    getRecentBooks(@Request() req) {
+        return this.userService.getRecentBooks(req.user.id);
+    }
 }

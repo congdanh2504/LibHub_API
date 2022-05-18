@@ -90,4 +90,20 @@ export class BorrowerRecordService {
             }
         });
     }
+
+    async getRecentBooks(userId: string) {
+        const returnedBook = await this.borrowerRecordModel.find({status: "Returned", user: userId});
+        const set = new Set([]);
+        for (let i=0; i<returnedBook.length; ++i) {
+            for (let j=0; j<returnedBook[i].books.length; ++j) {
+                set.add(returnedBook[i].books[j].book.toString());
+            }
+        }
+        const res = [];
+        for (var id of set) {
+            const book = await this.bookService.getBookById(id);
+            res.push(book)
+        }
+        return res;
+    }
 }

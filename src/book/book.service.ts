@@ -182,14 +182,10 @@ export class BookService {
                 set.add(temp[j].id);
             }
         }
+        console.log(set)
         const res = [];
         for (var id of set) {
-            const book = await this.bookModel.findById(id).populate({
-                path: "reviews.user",
-                populate: {
-                    path: "currentPackage"
-                }
-            }).populate("category");
+            const book = await this.getBookById(id);
             res.push(book)
         }
         return res;
