@@ -20,6 +20,24 @@ export class BookService {
         }).populate("category");
     }
 
+    async getUserRequestedBooks(userId: string) {
+        return await this.bookModel.find({ type: "requested", requester: userId }).populate({
+            path: "reviews.user",
+            populate: {
+                path: "currentPackage"
+            }
+        }).populate("category");
+    }
+
+    async getRequestedBooks() {
+        return await this.bookModel.find({ type: "requested" }).populate({
+            path: "reviews.user",
+            populate: {
+                path: "currentPackage"
+            }
+        }).populate("category");
+    }
+
     async getBooksByCategory(categoryId: string) {
         return await this.bookModel.find({ type: "available", category: categoryId}).populate({
             path: "reviews.user",
@@ -106,7 +124,7 @@ export class BookService {
             author: book.author,
             publisher: book.publisher,
             picture: book.picture,
-            type: book.type,
+            type: "requested",
             publishYear: book.publishYear,
             requester: user
         });

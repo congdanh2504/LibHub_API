@@ -4,11 +4,52 @@ import { BorrowerRecord, BorrowRecordDto } from "./borrowerrecord.model";
 import { Model } from "mongoose";
 import { BookService } from "src/book/book.service";
 import { UserService } from "src/user/user.service";
+import { BorrowState } from "./borrowerrecord.enum";
 
 @Injectable()
 export class BorrowerRecordService {
     constructor(@InjectModel("BorrowerRecord") private readonly borrowerRecordModel: Model<BorrowerRecord>,
     private readonly bookService: BookService) {}
+
+    async getRecordById(recordId: string) {
+        return await this.borrowerRecordModel.findById(recordId).populate({
+            path: "books.book",
+            populate: [{
+                path: "reviews.user",
+                populate: {
+                    path: "currentPackage"
+                }
+            },
+            {
+                path: "category"
+            }]
+        }).populate({
+            path: "user",
+            populate: {
+                path: "currentPackage"
+            }
+        }); 
+    }
+
+    async getAllRecords() {
+        return await this.borrowerRecordModel.find().populate({
+            path: "books.book",
+            populate: [{
+                path: "reviews.user",
+                populate: {
+                    path: "currentPackage"
+                }
+            },
+            {
+                path: "category"
+            }]
+        }).populate({
+            path: "user",
+            populate: {
+                path: "currentPackage"
+            }
+        });
+    }
 
     async addRecord(dto: [BorrowRecordDto], userId: string) {
         for (let i=0; i<dto.length; ++i) {
@@ -17,7 +58,7 @@ export class BorrowerRecordService {
         const newRecord = new this.borrowerRecordModel({
             user: userId,
             books: dto,
-            status: "Pending confirm"
+            status: BorrowState.PendingConfirm
         });
         for (let i = 0; i<dto.length; ++i) {
             if (!(await this.bookService.checkQuantity(dto[i].id, dto[i].quantity))) throw new BadRequestException();
@@ -30,15 +71,37 @@ export class BorrowerRecordService {
     }
 
     async getUserRecord(userId: string) {
-        return this.borrowerRecordModel.find({user: userId}).populate(["user", "books"]);
+        return this.borrowerRecordModel.find({user: userId}).populate({
+            path: "books.book",
+            populate: [{
+                path: "reviews.user",
+                populate: {
+                    path: "currentPackage"
+                }
+            },
+            {
+                path: "category"
+            }]
+        }).populate({
+            path: "user",
+            populate: {
+                path: "currentPackage"
+            }
+        });
     }
 
     async confirmBorrow(recordId: string) {
-        const record = await this.borrowerRecordModel.findById(recordId);
-        record.status = "Borrowing";
+        const record = await this.borrowerRecordModel.findById(recordId).populate({
+            path: "user",
+            populate: {
+                path: "currentPackage"
+            }
+        });
+        record.status = BorrowState.Borrowing;
         record.createdDate = new Date(Date.now());
         const timeOfOneDay = 3600 * 1000 * 24;
-        record.returnDate = new Date(Date.now() + timeOfOneDay * 7);
+        const borrowDays = record.user["currentPackage"]["borrowDays"]
+        record.returnDate = new Date(Date.now() + timeOfOneDay * borrowDays);
         for (let i = 0; i < record.books.length; ++i) {
             this.bookService.increaseBorrowedNum(record.books[i].book);
         }
@@ -49,14 +112,17 @@ export class BorrowerRecordService {
     async return(recordId: string, userId) {
         const record = await this.borrowerRecordModel.findById(recordId);
         if (record.user != userId) throw new BadRequestException();
-        record.status = "Pending return";
+        record.status = BorrowState.PendingReturn;
         const result = await record.save();
         return result.id;
     }
 
     async confirmReturn(recordId: string) {
         const record = await this.borrowerRecordModel.findById(recordId);
-        record.status = "Returned";
+        record.status = BorrowState.Returned;
+        for (let i = 0; i < record.books.length; ++i) {
+            await this.bookService.editQuantity(record.books[i].book, -record.books[i].quantity);
+        }
         const result = await record.save();
         return result.id;
     }
@@ -64,13 +130,13 @@ export class BorrowerRecordService {
     async getBorrowingBooks(userId: string) {
         return await this.borrowerRecordModel.findOne({ user: userId, $or : [
             {
-                status: "Pending confirm"
+                status: BorrowState.PendingConfirm
             },
             {
-                status: "Borrowing"
+                status: BorrowState.Borrowing
             },
             {
-                status: "Pending return"
+                status: BorrowState.PendingReturn
             }
         ]}).populate({
             path: "books.book",

@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import Role from "src/auth/guards/role.enum";
 import RoleGuard from "src/auth/guards/role.guard";
 import { Book } from "src/book/book.model";
 import { BookService } from "src/book/book.service";
+import { BorrowState } from "src/borrower-record/borrowerrecord.enum";
 import { BorrowerRecordService } from "src/borrower-record/borrowerrecord.service";
 import { Category } from "src/category/category.model";
 import { CategoryService } from "src/category/category.service";
@@ -35,15 +36,31 @@ export class AdminController {
         return this.bookService.updateBook(param.id, book);
     }
 
-    @Patch("confirm/:id")
-    confirmBorrowerRecord(@Param() param: any) {
-        return this.borrowerRecordService.confirmBorrow(param.id);
+    @Get("record/:recordId")
+    getRecordById(@Param() param: any) {
+        return this.borrowerRecordService.getRecordById(param.recordId);
     }
 
-    @Patch("confirmreturn/:id")
-    async confirmReturnRecord(@Param() param: any) {
-        await this.userService.setIsBorrowing(param.id, false);
-        return this.borrowerRecordService.confirmReturn(param.id);
+    @Post("confirm/:recordId")
+    async confirm(@Param() param: any) {
+        const record = await this.borrowerRecordService.getRecordById(param.recordId);
+        if (record.status == BorrowState.PendingConfirm) {
+            return this.confirmBorrow(param.recordId);
+        } else if (record.status == BorrowState.PendingReturn) {
+            return await this.confirmReturnRecord(param.recordId);
+        } else {
+            throw new BadRequestException();
+        }
+    }
+   
+    confirmBorrow(recordId: string) {
+        return this.borrowerRecordService.confirmBorrow(recordId);
+    }
+
+    async confirmReturnRecord(recordId: string) {
+        const record = await this.borrowerRecordService.getRecordById(recordId);
+        await this.userService.setIsBorrowing(record.user, false);
+        return this.borrowerRecordService.confirmReturn(recordId);
     }
 
     @Post("category")
@@ -54,5 +71,15 @@ export class AdminController {
     @Post("package")
     addPackage(@Body() pack: Package) {
         return this.packageService.addPackage(pack);
+    }
+
+    @Get("record")
+    getAllRecords() {
+        return this.borrowerRecordService.getAllRecords();
+    }
+
+    @Get("requestedbooks")
+    getRequestedBooks() {
+        return this.bookService.getRequestedBooks();
     }
 }

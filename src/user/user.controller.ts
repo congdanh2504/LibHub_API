@@ -12,11 +12,6 @@ import { UserService } from "./user.service";
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
-    @Get("profile")
-    getProfile(@Request() req) {
-        return this.userService.getProfile(req.user.id);
-    }
-
     @Post("addreview/:bookId")
     addReview(@Body() dto: ReviewDto,@Param() param: any, @Request() req) {
         return this.userService.addReview(dto, req.user.id, param.bookId);
