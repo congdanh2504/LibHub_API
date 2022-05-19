@@ -111,7 +111,7 @@ export class BookService {
     }
 
     async deleteBook(id: string) {
-        return await this.bookModel.findById(id).remove();
+        return await this.bookModel.findByIdAndDelete(id);
     }
 
     async addReview(dto: ReviewDto, userId: string, bookId: string) {

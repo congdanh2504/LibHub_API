@@ -94,4 +94,7 @@ export class UserService {
         return this.bookService.getUserRequestedBooks(userId);
     }
     
+    async deleteRequestedBook(bookId: string) {
+        return this.bookService.deleteBook(bookId);
+    }
 }
