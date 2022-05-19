@@ -17,7 +17,7 @@ export class AppController {
       return this.userService.getProfile(req.user.id);
   }
 
-  @Post("getPicture")
+  @Post("uploadpicture")
   @UseInterceptors(FileInterceptor("file", {
     storage: diskStorage({
       destination: '/uploads',

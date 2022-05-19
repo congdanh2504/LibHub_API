@@ -17,8 +17,10 @@ export class UserController {
         return this.userService.addReview(dto, req.user.id, param.bookId);
     }
 
-    @Post("addrequestedbook")
+    @Post("requestbook")
     addRequestedBook(@Body() dto: RequestedBook, @Request() req) {
+        dto.category = dto.category["_id"];
+        console.log(dto)
         return this.userService.addRequestedBook(dto, req.user.id);
     }
 

@@ -7,7 +7,7 @@ export const BookSchema = new mongoose.Schema({
     description: {type: String, required: true},
     author: {type: String, required: true},
     authorLower: {type: String, required: true},
-    publisher: {type: String, required: true},
+    publisher: {type: String, required: false},
     category: {type: mongoose.Schema.Types.ObjectId, ref: "Category", required: false},
     price: {type: Number, required: false},
     quantity: {type: Number, required: false, min: 0},
@@ -20,6 +20,7 @@ export const BookSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
+    isAccepted: {type: Boolean, required: false},
     picture: {type: String, required: true},
     avgRate: {type: Number, required: false},
     reviews: [{
@@ -28,7 +29,7 @@ export const BookSchema = new mongoose.Schema({
         comment: {type: String, required: false}
     }],
     type: {type: String, required: true},
-    publishYear: {type: Number, required: true},
+    publishYear: {type: Number, required: false},
     requester: {type: mongoose.Schema.Types.ObjectId, ref: "User", required: false}
 });
 
@@ -84,14 +85,11 @@ export class RequestedBook {
     @IsNotEmpty()
     description: string;
     @IsNotEmpty()
+    category: string;
+    @IsNotEmpty()
     author: string;
     @IsNotEmpty()
-    publisher: string;
-    @IsNotEmpty()
     picture: string;
-    @IsNotEmpty()
     type: string;
-    @IsNotEmpty()
-    publishYear: number;
     requester: string
 }

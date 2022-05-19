@@ -59,6 +59,8 @@ export class BookService {
     async addBook(book: Book) {
         const newBook = new this.bookModel({
             name: book.name,
+            nameLower: book.name.toLowerCase(),
+            authorLower: book.author.toLowerCase(),
             description: book.description,
             author: book.author,
             publisher: book.publisher,
@@ -84,6 +86,8 @@ export class BookService {
         return await this.bookModel.findByIdAndUpdate(id, 
             {
                 name: book.name,
+                nameLower: book.name.toLowerCase(),
+                authorLower: book.author.toLowerCase(),
                 description: book.description,
                 author: book.author,
                 publisher: book.publisher,
@@ -122,15 +126,17 @@ export class BookService {
             name: book.name,
             description: book.description,
             author: book.author,
-            publisher: book.publisher,
+            nameLower: book.name.toLowerCase(),
+            authorLower: book.author.toLowerCase(),
+            category: book.category,
             picture: book.picture,
             type: "requested",
-            publishYear: book.publishYear,
+            isAccepted: false,
             requester: user
         });
         const result = await newBook.save();
-        result.category = undefined;
         result.reviews = undefined;
+        result.borrowedNum = undefined;
         await result.save();
         return result.id;
     }
