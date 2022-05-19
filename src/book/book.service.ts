@@ -21,21 +21,25 @@ export class BookService {
     }
 
     async getUserRequestedBooks(userId: string) {
-        return await this.bookModel.find({ type: "requested", requester: userId }).populate({
-            path: "reviews.user",
-            populate: {
-                path: "currentPackage"
-            }
-        }).populate("category");
+        return await this.bookModel.find({ type: "requested", requester: userId })
+            .populate("category")
+            .populate({
+                path: "requester",
+                populate: {
+                    path: "currentPackage"
+                }
+            });
     }
 
     async getRequestedBooks() {
-        return await this.bookModel.find({ type: "requested" }).populate({
-            path: "reviews.user",
-            populate: {
-                path: "currentPackage"
-            }
-        }).populate("category");
+        return await this.bookModel.find({ type: "requested" })
+            .populate("category")
+            .populate({
+                path: "requester",
+                populate: {
+                    path: "currentPackage"
+                }
+            });
     }
 
     async getBooksByCategory(categoryId: string) {

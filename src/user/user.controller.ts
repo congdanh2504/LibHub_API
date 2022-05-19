@@ -20,7 +20,6 @@ export class UserController {
     @Post("requestbook")
     addRequestedBook(@Body() dto: RequestedBook, @Request() req) {
         dto.category = dto.category["_id"];
-        console.log(dto)
         return this.userService.addRequestedBook(dto, req.user.id);
     }
 
@@ -57,5 +56,10 @@ export class UserController {
     @Get("recentbooks")
     getRecentBooks(@Request() req) {
         return this.userService.getRecentBooks(req.user.id);
+    }
+
+    @Get("requestedbooks")
+    getRequestedBooks(@Request() req) {
+        return this.userService.getRequestedBooks(req.user.id);
     }
 }
