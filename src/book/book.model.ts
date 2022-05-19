@@ -60,12 +60,13 @@ export class Book {
     @IsNotEmpty()
     @Min(1)
     quantity: number;
-    @IsNotEmpty()
+    @IsNotEmpty() 
     location: {
         face: number,
         column: number,
         row: number
     };
+    isAccepted: Boolean;
     borrowedNum: number;
     avgRate: number;
     reviews: [{

@@ -82,4 +82,9 @@ export class AdminController {
     getRequestedBooks() {
         return this.bookService.getRequestedBooks();
     }
+
+    @Post("acceptrequest/:bookId")
+    acceptRequest(@Param() param: any) {
+        return this.bookService.acceptRequest(param.bookId);    
+    }
 }

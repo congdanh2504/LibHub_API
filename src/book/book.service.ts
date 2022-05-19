@@ -217,4 +217,10 @@ export class BookService {
         }
         return res;
     }
+
+    async acceptRequest(bookId: string) {
+        const requestedBook = await this.bookModel.findById(bookId);
+        requestedBook.isAccepted = true;
+        await requestedBook.save()
+    }
 }
