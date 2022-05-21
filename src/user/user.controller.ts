@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post, Query, Req, Request, UseGua
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import Role from "src/auth/guards/role.enum";
 import RoleGuard from "src/auth/guards/role.guard";
-import { RequestedBook } from "src/book/book.model";
+import { Book, RequestedBook } from "src/book/book.model";
 import { ReviewDto } from "src/book/review.dto";
 import { BorrowerRecord, BorrowRecordDto } from "src/borrower-record/borrowerrecord.model";
 import { UserService } from "./user.service";
@@ -18,7 +18,7 @@ export class UserController {
     }
 
     @Post("requestbook")
-    addRequestedBook(@Body() dto: RequestedBook, @Request() req) {
+    addRequestedBook(@Body() dto: RequestedBook, @Request() req) {  
         dto.category = dto.category["_id"];
         return this.userService.addRequestedBook(dto, req.user.id);
     }
@@ -76,5 +76,15 @@ export class UserController {
     @Delete("deviceid")
     deleteDeviceId(@Query('deviceId') deviceId, @Request() req) {
         return this.userService.deleteDeviceId(deviceId, req.user.id);
+    }
+
+    @Get("notification")
+    getNotifications(@Request() req) {
+        return this.userService.getNotification(req.user.id);
+    }
+
+    @Delete("notification/:notificationId")
+    deleteNotification(@Param() param: any, @Request() req) {
+        return this.userService.deleteNotification(req.user.id, param.notificationId);
     }
 }

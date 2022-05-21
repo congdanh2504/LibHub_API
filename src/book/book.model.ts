@@ -77,6 +77,7 @@ export class Book {
     type: string;
     @IsNotEmpty()
     publishYear: number;
+    requester;
 }
 
 export class RequestedBook {

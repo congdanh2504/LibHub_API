@@ -1,13 +1,14 @@
 import { BadRequestException, forwardRef, Inject, Injectable, UseGuards } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { RequestedBook } from "src/book/book.model";
 import { BookService } from "src/book/book.service";
 import { ReviewDto } from "src/book/review.dto";
-import { BorrowerRecord, BorrowRecordDto } from "src/borrower-record/borrowerrecord.model";
+import { BorrowRecordDto } from "src/borrower-record/borrowerrecord.model";
 import { BorrowerRecordService } from "src/borrower-record/borrowerrecord.service";
 import { PackageService } from "src/package/package.service";
 import { User } from "./user.model";
+import { Book, RequestedBook } from "../book/book.model"
+import { NotificationService } from "src/notification/notification.service";
 
 @Injectable()
 export class UserService {
@@ -16,7 +17,8 @@ export class UserService {
         @InjectModel("User") private readonly userModel: Model<User>,
         private readonly bookService: BookService,
         @Inject(forwardRef(() => BorrowerRecordService)) private readonly borrowerRecordService: BorrowerRecordService,
-        private readonly packageService: PackageService) {}
+        private readonly packageService: PackageService,
+        @Inject(forwardRef(() => NotificationService)) private readonly notificationService: NotificationService) {}
 
     async getProfile(id: string) {
         return await this.userModel.findById(id).populate("currentPackage");
@@ -123,5 +125,13 @@ export class UserService {
                 deviceIds: deviceId
             }
         });
+    }
+
+    async getNotification(userId: string) {
+        return this.notificationService.getNotifications(userId);
+    }
+
+    async deleteNotification(userId: string, notificationId: string) {
+        return this.notificationService.deleteNotification(userId, notificationId);
     }
 }

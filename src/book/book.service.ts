@@ -4,12 +4,12 @@ import { Book, RequestedBook } from "./book.model";
 import { Model } from "mongoose";
 import { ReviewDto } from "./review.dto";
 import { User } from "src/user/user.model";
-import { CategoryService } from "src/category/category.service";
+import { NotificationService } from "src/notification/notification.service";
 
 @Injectable()
 export class BookService {
     constructor(@InjectModel("Book") private readonly bookModel: Model<Book>,
-    private readonly categoryService: CategoryService) {}
+    private readonly notificationService: NotificationService) {}
 
     async getAllBooks() {
         return await this.bookModel.find({ type: "available" }).populate({
@@ -221,6 +221,8 @@ export class BookService {
     async acceptRequest(bookId: string) {
         const requestedBook = await this.bookModel.findById(bookId);
         requestedBook.isAccepted = true;
+        const message = "Admin accepted your requested book"
+        this.notificationService.addNotification(message, requestedBook.requester)
         await requestedBook.save()
     }
 }

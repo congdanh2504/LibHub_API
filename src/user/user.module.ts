@@ -4,6 +4,7 @@ import { PassportModule } from "@nestjs/passport";
 import { ScheduleModule } from "@nestjs/schedule";
 import { BookModule } from "src/book/book.module";
 import { BorrowerRecordModule } from "src/borrower-record/borrowerrecord.module";
+import { NotificationModule } from "src/notification/notification.module";
 import { PackageModule } from "src/package/package.module";
 import { UserSchema } from "../user/user.model";
 import { CronService } from "./cron.service";
@@ -13,7 +14,7 @@ import { UserService } from "./user.service";
 @Module({
     imports: [MongooseModule.forFeature([{name: "User", schema: UserSchema}]), 
     PassportModule, BookModule, forwardRef(() => BorrowerRecordModule), PackageModule,
-    ScheduleModule.forRoot()],
+    ScheduleModule.forRoot(), NotificationModule],
     controllers: [UserController],
     providers: [UserService],
     exports: [UserService]

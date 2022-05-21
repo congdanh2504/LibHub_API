@@ -11,8 +11,7 @@ import { UserService } from "src/user/user.service";
 export class BorrowerRecordService {
     constructor(@InjectModel("BorrowerRecord") private readonly borrowerRecordModel: Model<BorrowerRecord>,
     private readonly bookService: BookService,
-    private readonly notificationService: NotificationService,
-    @Inject(forwardRef(() => UserService)) private readonly userService: UserService) {}
+    private readonly notificationService: NotificationService) {}
 
     async getRecordById(recordId: string) {
         return await this.borrowerRecordModel.findById(recordId).populate({
@@ -100,7 +99,6 @@ export class BorrowerRecordService {
                 path: "currentPackage"
             }
         });
-        const user = await this.userService.getProfile(record.user);
         record.status = BorrowState.Borrowing;
         record.createdDate = new Date(Date.now());
         const timeOfOneDay = 3600 * 1000 * 24;
@@ -111,7 +109,7 @@ export class BorrowerRecordService {
         }
         const result = await record.save();
         const message = "Admin was confirm your borrowing record";
-        await this.notificationService.addNotification(message, user)
+        await this.notificationService.addNotification(message, record.user)
         return result.id;
     }
 
@@ -125,14 +123,13 @@ export class BorrowerRecordService {
 
     async confirmReturn(recordId: string) {
         const record = await this.borrowerRecordModel.findById(recordId);
-        const user = await this.userService.getProfile(record.user);
         record.status = BorrowState.Returned;
         for (let i = 0; i < record.books.length; ++i) {
             await this.bookService.editQuantity(record.books[i].book, -record.books[i].quantity);
         }
         const result = await record.save();
         const message = "Admin was confirm your returning record";
-        await this.notificationService.addNotification(message, user)
+        await this.notificationService.addNotification(message, record.user)
         return result.id;
     }
 
