@@ -8,6 +8,7 @@ export const UserSchema = new mongoose.Schema({
     currentPackage: {type: mongoose.Schema.Types.ObjectId, ref: "Package"},
     expiration: {type: Date},
     isBorrowing: {type: Boolean, default: false},
+    deviceIds: [{type: String}],
     picture: {type: String, required: true}
 });
 
@@ -24,6 +25,7 @@ export interface User {
     email: string;
     password: string;
     role: string;
+    deviceIds: [string];
     currentPackage: string;
     expiration: Date;
     isBorrowing: Boolean;

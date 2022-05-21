@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Req, Request, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Query, Req, Request, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import Role from "src/auth/guards/role.enum";
 import RoleGuard from "src/auth/guards/role.guard";
@@ -66,5 +66,15 @@ export class UserController {
     @Delete("requestedbook/:bookId")
     deleteRequestedBook(@Param() param: any) {
         return this.userService.deleteRequestedBook(param.bookId);
+    }
+
+    @Post("deviceid")
+    addDeviceId(@Query('deviceId') deviceId, @Request() req) {
+        return this.userService.addDeviceId(deviceId, req.user.id);
+    }
+
+    @Delete("deviceid")
+    deleteDeviceId(@Query('deviceId') deviceId, @Request() req) {
+        return this.userService.deleteDeviceId(deviceId, req.user.id);
     }
 }

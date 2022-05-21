@@ -53,7 +53,7 @@ export class AdminController {
         }
     }
    
-    confirmBorrow(recordId: string) {
+    async confirmBorrow(recordId: string) {
         return this.borrowerRecordService.confirmBorrow(recordId);
     }
 

@@ -1,15 +1,18 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { BorrowerRecord, BorrowRecordDto } from "./borrowerrecord.model";
 import { Model } from "mongoose";
 import { BookService } from "src/book/book.service";
-import { UserService } from "src/user/user.service";
 import { BorrowState } from "./borrowerrecord.enum";
+import { NotificationService } from "src/notification/notification.service";
+import { UserService } from "src/user/user.service";
 
 @Injectable()
 export class BorrowerRecordService {
     constructor(@InjectModel("BorrowerRecord") private readonly borrowerRecordModel: Model<BorrowerRecord>,
-    private readonly bookService: BookService) {}
+    private readonly bookService: BookService,
+    private readonly notificationService: NotificationService,
+    @Inject(forwardRef(() => UserService)) private readonly userService: UserService) {}
 
     async getRecordById(recordId: string) {
         return await this.borrowerRecordModel.findById(recordId).populate({
@@ -90,13 +93,14 @@ export class BorrowerRecordService {
         });
     }
 
-    async confirmBorrow(recordId: string) {
+    async confirmBorrow(recordId: string) { 
         const record = await this.borrowerRecordModel.findById(recordId).populate({
             path: "user",
             populate: {
                 path: "currentPackage"
             }
         });
+        const user = await this.userService.getProfile(record.user);
         record.status = BorrowState.Borrowing;
         record.createdDate = new Date(Date.now());
         const timeOfOneDay = 3600 * 1000 * 24;
@@ -106,6 +110,8 @@ export class BorrowerRecordService {
             this.bookService.increaseBorrowedNum(record.books[i].book);
         }
         const result = await record.save();
+        const message = "Admin was confirm your borrowing record";
+        await this.notificationService.addNotification(message, user)
         return result.id;
     }
 
@@ -119,11 +125,14 @@ export class BorrowerRecordService {
 
     async confirmReturn(recordId: string) {
         const record = await this.borrowerRecordModel.findById(recordId);
+        const user = await this.userService.getProfile(record.user);
         record.status = BorrowState.Returned;
         for (let i = 0; i < record.books.length; ++i) {
             await this.bookService.editQuantity(record.books[i].book, -record.books[i].quantity);
         }
         const result = await record.save();
+        const message = "Admin was confirm your returning record";
+        await this.notificationService.addNotification(message, user)
         return result.id;
     }
 

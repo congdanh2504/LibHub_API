@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UseGuards } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, Injectable, UseGuards } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { RequestedBook } from "src/book/book.model";
@@ -15,10 +15,10 @@ export class UserService {
     constructor(
         @InjectModel("User") private readonly userModel: Model<User>,
         private readonly bookService: BookService,
-        private readonly borrowerRecordService: BorrowerRecordService,
+        @Inject(forwardRef(() => BorrowerRecordService)) private readonly borrowerRecordService: BorrowerRecordService,
         private readonly packageService: PackageService) {}
 
-    async getProfile(id: string): Promise<User> {
+    async getProfile(id: string) {
         return await this.userModel.findById(id).populate("currentPackage");
     }
     
@@ -96,5 +96,32 @@ export class UserService {
     
     async deleteRequestedBook(bookId: string) {
         return this.bookService.deleteBook(bookId);
+    }
+
+    async addDeviceId(deviceId: string, userId: string) {
+        const user = await this.userModel.findById(userId);
+        if (user.deviceIds == null) {   
+            user.deviceIds.push(deviceId);
+            await user.save();
+            return;
+        } 
+        const checkDeviceIdExist = await this.userModel.findOne({
+            _id: userId,
+            deviceIds: deviceId
+        });
+        if (checkDeviceIdExist) return;
+       
+        user.deviceIds.push(deviceId);
+        await user.save();
+    }
+
+    async deleteDeviceId(deviceId: string, userId: string) {
+        await this.userModel.updateOne({
+            _id: userId
+        }, {
+            $pull: {
+                deviceIds: deviceId
+            }
+        });
     }
 }
