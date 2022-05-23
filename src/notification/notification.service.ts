@@ -43,7 +43,7 @@ export class NotificationService {
             populate: {
                 path: "currentPackage"
             }
-        });
+        }).sort({createdDate: "desc"});
     }
 
     async deleteNotification(userId: string, notificationId: string) {

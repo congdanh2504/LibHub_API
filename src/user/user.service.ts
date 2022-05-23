@@ -20,6 +20,10 @@ export class UserService {
         private readonly packageService: PackageService,
         @Inject(forwardRef(() => NotificationService)) private readonly notificationService: NotificationService) {}
 
+    async getUsers() {
+        return await this.userModel.find().populate("currentPackage");
+    }
+
     async getProfile(id: string) {
         return await this.userModel.findById(id).populate("currentPackage");
     }

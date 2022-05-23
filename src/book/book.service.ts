@@ -104,8 +104,6 @@ export class BookService {
                     column: book.location.column,
                     row: book.location.row
                 },
-                avgRate: book.avgRate,
-                type: book.type,
                 publishYear: book.publishYear
             });
     }

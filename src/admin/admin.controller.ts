@@ -21,6 +21,11 @@ export class AdminController {
         private readonly packageService: PackageService,
         private readonly userService: UserService) {}
 
+    @Get("user")
+    getUsers() {
+        return this.userService.getUsers();
+    }
+
     @Post("book")
     addBook(@Body() book: Book) {
         return this.bookService.addBook(book);
@@ -73,6 +78,16 @@ export class AdminController {
         return this.packageService.addPackage(pack);
     }
 
+    @Patch("package/:packageId")
+    updatePackage(@Param() param: any, @Body() pack: Package) {
+        return this.packageService.updatePackage(pack, param.packageId);
+    }
+
+    @Delete("package/:packageId")
+    deletePackage(@Param() param: any) {
+        return this.packageService.deletePackage(param.packageId);
+    }
+
     @Get("record")
     getAllRecords() {
         return this.borrowerRecordService.getAllRecords();
@@ -86,5 +101,35 @@ export class AdminController {
     @Post("acceptrequest/:bookId")
     acceptRequest(@Param() param: any) {
         return this.bookService.acceptRequest(param.bookId);    
+    }
+
+    @Get("report")
+    async getReport() {
+        const recordNumByMonth = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        const records = await this.borrowerRecordService.getAllRecords();
+        const currentDate = new Date(Date.now());
+        for (let i=0; i<records.length; ++i) {
+            if (currentDate.getFullYear() == records[i].createdDate.getFullYear()) {
+                ++recordNumByMonth[records[i].createdDate.getMonth()-1];
+            }
+        }
+        const packages = await this.packageService.getPackages();
+        const packageNames = [];
+        const packageIds = [];
+        const purchaseNum = [];
+        for (let i=0; i<packages.length; ++i) {
+            packageNames.push(packages[i].name);
+            packageIds.push(packages[i]._id.toString());
+            purchaseNum.push(0);
+        }
+        const users = await this.userService.getUsers();
+        for (let i=0; i<users.length; ++i) {
+            if (users[i].currentPackage == null) continue;
+            ++purchaseNum[packageIds.indexOf(users[i].currentPackage["_id"].toString())];
+        }
+        return {recordNumByMonth: recordNumByMonth, package: {
+            name: packageNames,
+            purchaseNum: purchaseNum
+        }};
     }
 }

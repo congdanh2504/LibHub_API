@@ -21,10 +21,26 @@ export class PackageService {
             time: pack.time,
             price: pack.price,
             benefit: pack.benefit,
-            booksPerLoan: pack.booksPerLoan
+            booksPerLoan: pack.booksPerLoan,
+            borrowDays: pack.borrowDays
         });
         const result = await newPack.save();
         return result._id;
     }
     
+    async updatePackage(pack: Package, packageId: string) {
+        const currentPack = await this.packageModel.findById(packageId);
+        currentPack.name = pack.name;
+        currentPack.time = pack.time;
+        currentPack.benefit = pack.benefit;
+        currentPack.price = pack.price;
+        currentPack.booksPerLoan = pack.booksPerLoan;
+        currentPack.borrowDays = pack.borrowDays;
+        const result = await currentPack.save();
+        return result._id;
+    }
+
+    async deletePackage(packageId: string) {
+        return await this.packageModel.deleteOne({_id: packageId});
+    }
 }
