@@ -6,7 +6,8 @@ import { NotificationSchema } from "./notification.model";
 import { UserModule } from "src/user/user.module";
 
 @Module({
-    imports: [ScheduleModule.forRoot(), MongooseModule.forFeature([{name: "Notification", schema: NotificationSchema}]), forwardRef(() => UserModule)],
+    imports: [ScheduleModule.forRoot(), MongooseModule.forFeature([{name: "Notification", schema: NotificationSchema}]), forwardRef(() => UserModule),
+    ScheduleModule.forRoot()],
     providers: [NotificationService],
     exports: [NotificationService]
 })

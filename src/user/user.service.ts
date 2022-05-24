@@ -138,4 +138,8 @@ export class UserService {
     async deleteNotification(userId: string, notificationId: string) {
         return this.notificationService.deleteNotification(userId, notificationId);
     }
+
+    async getRecords() {
+        return await this.borrowerRecordService.getAllRecords();
+    }
 }
