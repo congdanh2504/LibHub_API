@@ -4,6 +4,6 @@ export const DEFAULT_IMAGE = "https://encrypted-tbn0.gstatic.com/images?q=tbn:AN
 export const GOOGLE_DRIVE_CLIENT_ID = "246456551142-oolm4cshv7tqfa65n2mts1s9u75jk5ov.apps.googleusercontent.com";
 export const GOOGLE_DRIVE_CLIENT_SECRET = "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";
 export const GOOGLE_DRIVE_REDIRECT_URI = "https://developers.google.com/oauthplayground";
-export const GOOGLE_DRIVE_REFRESH_TOKEN = "1//04QplY7dGZOZGCgYIARAAGAQSNwF-L9IrIo_F9DEhDLv3mESKl3rvlOcMd1qEOC_elx5YcrbulkdI0499ZC2NTjKT8yhwEVcQsCg";
+export const GOOGLE_DRIVE_REFRESH_TOKEN = "1//04CM3t8KAKH0UCgYIARAAGAQSNwF-L9IrIVH8kGyOKvEetqjRXK8N7R4oN6lhCmqetbv6zJ-WlYXWdi6wQK346ZuretgQo6VNtlU";
 export const APP_ID = "c6234e03-4dbd-4e8c-b13f-94d0e5cb56d9"
 export const API_KEY = "NmM0MDdkMmYtMTQzOS00NzJjLWE2MmEtNGYxYTE5NDZjN2My"
