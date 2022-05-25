@@ -142,4 +142,10 @@ export class UserService {
     async getRecords() {
         return await this.borrowerRecordService.getAllRecords();
     }
+
+    async getAdmin() {
+        return await this.userModel.find({
+            role: "admin"
+        });
+    }
 }

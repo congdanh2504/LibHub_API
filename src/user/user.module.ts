@@ -7,13 +7,12 @@ import { BorrowerRecordModule } from "src/borrower-record/borrowerrecord.module"
 import { NotificationModule } from "src/notification/notification.module";
 import { PackageModule } from "src/package/package.module";
 import { UserSchema } from "../user/user.model";
-import { CronService } from "./cron.service";
 import { UserController } from "./user.controller";
 import { UserService } from "./user.service";
 
 @Module({
     imports: [MongooseModule.forFeature([{name: "User", schema: UserSchema}]), 
-    PassportModule, BookModule, forwardRef(() => BorrowerRecordModule), PackageModule,
+    PassportModule, forwardRef(() => BookModule), forwardRef(() => BorrowerRecordModule), PackageModule,
     ScheduleModule.forRoot(), NotificationModule],
     controllers: [UserController],
     providers: [UserService],

@@ -7,7 +7,7 @@ import { ReviewDto } from "src/book/review.dto";
 import { BorrowerRecord, BorrowRecordDto } from "src/borrower-record/borrowerrecord.model";
 import { UserService } from "./user.service";
 
-@UseGuards(JwtAuthGuard, RoleGuard(Role.User))
+@UseGuards(JwtAuthGuard)
 @Controller("user")
 export class UserController {
     constructor(private readonly userService: UserService) {}

@@ -11,7 +11,8 @@ import { UserService } from "src/user/user.service";
 export class BorrowerRecordService {
     constructor(@InjectModel("BorrowerRecord") private readonly borrowerRecordModel: Model<BorrowerRecord>,
     private readonly bookService: BookService,
-    private readonly notificationService: NotificationService) {}
+    private readonly notificationService: NotificationService,
+    @Inject(forwardRef(() => UserService)) private readonly userService: UserService) {}
 
     async getRecordById(recordId: string) {
         return await this.borrowerRecordModel.findById(recordId).populate({
@@ -68,7 +69,13 @@ export class BorrowerRecordService {
         dto.forEach((book) => {
             this.bookService.editQuantity(book.id, book.quantity);
         });
+        const user = await this.userService.getProfile(userId);
         const result = await newRecord.save();
+        const adminUsers = await this.userService.getAdmin();
+        const message = `${user.username} just added a new borrowing record`;
+        for (let i=0; i<adminUsers.length; ++i) {
+            this.notificationService.addNotification(message, adminUsers[i].id);
+        }
         return result.id;
     }
 
@@ -113,11 +120,17 @@ export class BorrowerRecordService {
         return result.id;
     }
 
-    async return(recordId: string, userId) {
+    async return(recordId: string, userId: string) {
         const record = await this.borrowerRecordModel.findById(recordId);
         if (record.user != userId) throw new BadRequestException();
         record.status = BorrowState.PendingReturn;
         const result = await record.save();
+        const user = await this.userService.getProfile(userId);
+        const adminUsers = await this.userService.getAdmin();
+        const message = `${user.username} just added a return request`;
+        for (let i=0; i<adminUsers.length; ++i) {
+            this.notificationService.addNotification(message, adminUsers[i].id);
+        }
         return result.id;
     }
 

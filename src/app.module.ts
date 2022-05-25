@@ -11,7 +11,6 @@ import { GoogleDriveModule } from './googledrive/googledrive.module';
 import { AdminModule } from './admin/admin.module';
 import { PackageModule } from './package/package.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { CronService } from './user/cron.service';
 
 @Module({
   imports: [MongooseModule.forRoot(MONGODB_URL), AuthModule, UserModule, HttpModule, GoogleDriveModule, BookModule, AdminModule, PackageModule],

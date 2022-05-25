@@ -19,9 +19,4 @@ export class CategoryService {
         const result = await newCategory.save();
         return result.id;
     }
-
-    async addBookToCategory(categoryId: string) {
-        const category = await this.categoryModel.findById(categoryId);
-        await category.save();
-    }
 }

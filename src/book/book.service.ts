@@ -1,15 +1,17 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Book, RequestedBook } from "./book.model";
 import { Model } from "mongoose";
 import { ReviewDto } from "./review.dto";
 import { User } from "src/user/user.model";
 import { NotificationService } from "src/notification/notification.service";
+import { UserService } from "src/user/user.service";
 
 @Injectable()
 export class BookService {
     constructor(@InjectModel("Book") private readonly bookModel: Model<Book>,
-    private readonly notificationService: NotificationService) {}
+    private readonly notificationService: NotificationService,
+    @Inject(forwardRef(() => UserService)) private readonly userService: UserService) {}
 
     async getAllBooks() {
         return await this.bookModel.find({ type: "available" }).populate({
@@ -124,6 +126,11 @@ export class BookService {
     }
 
     async addRequestedBook(book: RequestedBook, user: User) {
+        const adminUsers = await this.userService.getAdmin();
+        const message = `${user.username} just added a new requested book`;
+        for (let i=0; i<adminUsers.length; ++i) {
+            this.notificationService.addNotification(message, adminUsers[i].id);
+        }
         const newBook = new this.bookModel({
             name: book.name,
             description: book.description,

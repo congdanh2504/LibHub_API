@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Request, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import Role from "src/auth/guards/role.enum";
 import RoleGuard from "src/auth/guards/role.guard";
@@ -8,6 +8,7 @@ import { BorrowState } from "src/borrower-record/borrowerrecord.enum";
 import { BorrowerRecordService } from "src/borrower-record/borrowerrecord.service";
 import { Category } from "src/category/category.model";
 import { CategoryService } from "src/category/category.service";
+import { NotificationService } from "src/notification/notification.service";
 import { Package } from "src/package/package.model";
 import { PackageService } from "src/package/package.service";
 import { UserService } from "src/user/user.service";
@@ -19,7 +20,8 @@ export class AdminController {
         private readonly borrowerRecordService: BorrowerRecordService,
         private readonly categoryService: CategoryService,
         private readonly packageService: PackageService,
-        private readonly userService: UserService) {}
+        private readonly userService: UserService,
+        private readonly notificationService: NotificationService) {}
 
     @Get("user")
     getUsers() {
@@ -131,5 +133,10 @@ export class AdminController {
             name: packageNames,
             purchaseNum: purchaseNum
         }};
+    }
+
+    @Get("notification")
+    getNotifications(@Request() req) {
+        return this.notificationService.getNotifications(req.user.id);
     }
 }
