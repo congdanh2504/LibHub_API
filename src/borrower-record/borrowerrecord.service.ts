@@ -34,8 +34,8 @@ export class BorrowerRecordService {
         }); 
     }
 
-    async getAllRecords() {
-        return await this.borrowerRecordModel.find().populate({
+    async getAllRecords(skip: number, limit: number) {
+        return await this.borrowerRecordModel.find().skip(skip).limit(limit).populate({
             path: "books.book",
             populate: [{
                 path: "reviews.user",
@@ -51,6 +51,8 @@ export class BorrowerRecordService {
             populate: {
                 path: "currentPackage"
             }
+        }).sort({
+            createdDate: "desc"
         });
     }
 
@@ -176,7 +178,7 @@ export class BorrowerRecordService {
         });
     }
 
-    async getRecentBooks(userId: string) {
+    async getRecentBooks(userId: string, skip: number, limit: number) {
         const returnedBook = await this.borrowerRecordModel.find({status: "Returned", user: userId});
         const set = new Set([]);
         for (let i=0; i<returnedBook.length; ++i) {
@@ -189,6 +191,7 @@ export class BorrowerRecordService {
             const book = await this.bookService.getBookById(id);
             res.push(book)
         }
-        return res;
+        
+        return res.slice(skip, skip + limit);
     }
 }

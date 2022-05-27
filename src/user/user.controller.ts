@@ -54,13 +54,13 @@ export class UserController {
     }
 
     @Get("recentbooks")
-    getRecentBooks(@Request() req) {
-        return this.userService.getRecentBooks(req.user.id);
+    getRecentBooks(@Request() req, @Query("skip") skip: number, @Query("limit") limit: number) {
+        return this.userService.getRecentBooks(req.user.id, skip, limit);
     }
 
     @Get("requestedbooks")
-    getRequestedBooks(@Request() req) {
-        return this.userService.getRequestedBooks(req.user.id);
+    getRequestedBooks(@Request() req, @Query("skip") skip: number, @Query("limit") limit: number) {
+        return this.userService.getRequestedBooks(req.user.id, skip, limit);
     }
 
     @Delete("requestedbook/:bookId")

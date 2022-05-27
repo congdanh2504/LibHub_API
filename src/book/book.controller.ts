@@ -13,13 +13,13 @@ export class BookController {
     }
 
     @Get("search")
-    search(@Query() query: any) {
-        return this.bookService.search(query.query);
+    search(@Query("query") query: string, @Query("skip") skip: number = 0, @Query("limit") limit: number = 1000) {
+        return this.bookService.search(query, skip, limit);
     }
 
     @Get("category/:categoryId")
-    getBooksByCategory(@Param() param: any) {
-        return this.bookService.getBooksByCategory(param.categoryId);
+    getBooksByCategory(@Param() param: any, @Query("skip") skip: number = 0, @Query("limit") limit: number) {
+        return this.bookService.getBooksByCategory(param.categoryId, skip, limit);
     }
 
     @Get("discover")

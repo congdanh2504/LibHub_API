@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Request, UseGuards } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import Role from "src/auth/guards/role.enum";
 import RoleGuard from "src/auth/guards/role.guard";
@@ -91,13 +91,13 @@ export class AdminController {
     }
 
     @Get("record")
-    getAllRecords() {
-        return this.borrowerRecordService.getAllRecords();
+    getAllRecords(@Query("skip") skip: number, @Query("limit") limit: number) {
+        return this.borrowerRecordService.getAllRecords(skip, limit);
     }
 
     @Get("requestedbooks")
-    getRequestedBooks() {
-        return this.bookService.getRequestedBooks();
+    getRequestedBooks( @Query("skip") skip: number, @Query("limit") limit: number) {
+        return this.bookService.getRequestedBooks(skip, limit);
     }
 
     @Post("acceptrequest/:bookId")
@@ -108,7 +108,7 @@ export class AdminController {
     @Get("report")
     async getReport() {
         const recordNumByMonth = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        const records = await this.borrowerRecordService.getAllRecords();
+        const records = await this.borrowerRecordService.getAllRecords(0, 1000);
         const currentDate = new Date(Date.now());
         for (let i=0; i<records.length; ++i) {
             if (currentDate.getFullYear() == records[i].createdDate.getFullYear()) {

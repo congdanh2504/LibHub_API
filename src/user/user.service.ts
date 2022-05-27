@@ -92,12 +92,12 @@ export class UserService {
         return this.borrowerRecordService.getBorrowingBooks(userId);
     }
 
-    async getRecentBooks(userId: string) {
-        return this.borrowerRecordService.getRecentBooks(userId);
+    async getRecentBooks(userId: string, skip: number, limit: number) {
+        return this.borrowerRecordService.getRecentBooks(userId, skip, limit);
     }
 
-    async getRequestedBooks(userId: string) {
-        return this.bookService.getUserRequestedBooks(userId);
+    async getRequestedBooks(userId: string, skip: number, limit: number) {
+        return this.bookService.getUserRequestedBooks(userId, skip, limit);
     }
     
     async deleteRequestedBook(bookId: string) {
@@ -140,7 +140,7 @@ export class UserService {
     }
 
     async getRecords() {
-        return await this.borrowerRecordService.getAllRecords();
+        return await this.borrowerRecordService.getAllRecords(0, 1000);
     }
 
     async getAdmin() {

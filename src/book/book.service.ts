@@ -22,8 +22,10 @@ export class BookService {
         }).populate("category");
     }
 
-    async getUserRequestedBooks(userId: string) {
+    async getUserRequestedBooks(userId: string, skip: number, limit: number) {
         return await this.bookModel.find({ type: "requested", requester: userId })
+            .skip(skip)
+            .limit(limit)
             .populate("category")
             .populate({
                 path: "requester",
@@ -33,8 +35,10 @@ export class BookService {
             });
     }
 
-    async getRequestedBooks() {
+    async getRequestedBooks(skip: number, limit: number) {
         return await this.bookModel.find({ type: "requested" })
+            .skip(skip)
+            .limit(limit)
             .populate("category")
             .populate({
                 path: "requester",
@@ -44,8 +48,8 @@ export class BookService {
             });
     }
 
-    async getBooksByCategory(categoryId: string) {
-        return await this.bookModel.find({ type: "available", category: categoryId}).populate({
+    async getBooksByCategory(categoryId: string, skip: number, limit: number) {
+        return await this.bookModel.find({ type: "available", category: categoryId}).skip(skip).limit(limit).populate({
             path: "reviews.user",
             populate: {
                 path: "currentPackage"
@@ -203,11 +207,12 @@ export class BookService {
         return discover
     }
 
-    async search(query: String) {
+    async search(query: String, skip: number, limit: number) {
         const words = query.split(" ");
         const set = new Set([]);
         
         for (let i=0; i<words.length; ++i) {
+            if (words[i] == "") continue;
             const temp = await this.bookModel.find({type: "available"})
             .find({ $or:[ {nameLower: { $regex: '.*' + words[i] + '.*' } }, 
             {authorLower: { $regex: '.*' + words[i] + '.*'}}]});
@@ -220,7 +225,9 @@ export class BookService {
             const book = await this.getBookById(id);
             res.push(book)
         }
-        return res;
+        // return res;
+        // res.slice(1, 2);
+        return res.slice(skip, skip + limit);
     }
 
     async acceptRequest(bookId: string) {
