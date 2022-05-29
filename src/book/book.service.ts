@@ -22,10 +22,36 @@ export class BookService {
         }).populate("category");
     }
 
+    async getAllBooksPaginate(page) {
+        return await this.bookModel.find({ type: "available" }).populate({
+            path: "reviews.user",
+            populate: {
+                path: "currentPackage"
+            }
+        }).populate("category").skip((page-1)*10).limit(10);
+    }
+
     async getUserRequestedBooks(userId: string, skip: number, limit: number) {
         return await this.bookModel.find({ type: "requested", requester: userId })
             .skip(skip)
             .limit(limit)
+            .populate("category")
+            .populate({
+                path: "requester",
+                populate: {
+                    path: "currentPackage"
+                }
+            });
+    }
+
+    async getRequestedBooksNum() {
+        return await this.bookModel.find({ type: "requested"}).count();
+    }
+
+    async getRequestedBooksPaginate(page: number) {
+        return await this.bookModel.find({ type: "requested" })
+            .skip((page-1)*10)
+            .limit(10)
             .populate("category")
             .populate({
                 path: "requester",

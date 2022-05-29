@@ -24,8 +24,14 @@ export class AdminController {
         private readonly notificationService: NotificationService) {}
 
     @Get("user")
-    getUsers() {
-        return this.userService.getUsers();
+    async getUsers(@Query("page") page: number) {
+        const users = await this.userService.getUsers();
+        const usersPage = await this.userService.getUsersPaginate(page);
+        return {
+            data: usersPage,
+            activePage: page,
+            totalItemsCount: users.length,
+        }
     }
 
     @Post("book")
@@ -90,6 +96,28 @@ export class AdminController {
         return this.packageService.deletePackage(param.packageId);
     }
 
+    @Get("recordpaginate")
+    async getAllRecordsPaginate(@Query("page") page: number) {
+        const records = await this.borrowerRecordService.getRecordNum();
+        const recordsPaginate = await this.borrowerRecordService.getAllRecordsPaginate(page);
+        return {
+            data: recordsPaginate,
+            activePage: page,
+            totalItemsCount: records,
+        }
+    }
+
+    @Get("requestedbookspaginate")
+    async getRequestedBooksPaginate(@Query("page") page: number) {
+        const books = await this.bookService.getRequestedBooksNum();
+        const booksPaginate = await this.bookService.getRequestedBooksPaginate(page);
+        return {
+            data: booksPaginate,
+            activePage: page,
+            totalItemsCount: books,
+        }
+    }
+
     @Get("record")
     getAllRecords(@Query("skip") skip: number, @Query("limit") limit: number) {
         return this.borrowerRecordService.getAllRecords(skip, limit);
@@ -112,7 +140,7 @@ export class AdminController {
         const currentDate = new Date(Date.now());
         for (let i=0; i<records.length; ++i) {
             if (currentDate.getFullYear() == records[i].createdDate.getFullYear()) {
-                ++recordNumByMonth[records[i].createdDate.getMonth()-1];
+                ++recordNumByMonth[records[i].createdDate.getMonth()];
             }
         }
         const packages = await this.packageService.getPackages();

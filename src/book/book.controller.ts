@@ -8,12 +8,18 @@ export class BookController {
     constructor(private readonly bookService: BookService) {}
 
     @Get()
-    getAllBooks() {
-        return this.bookService.getAllBooks();
+    async getAllBooks(@Query("page") page: number) {
+        const books = await this.bookService.getAllBooks();
+        const booksPage = await this.bookService.getAllBooksPaginate(page);
+        return {
+            data: booksPage,
+            activePage: page,
+            totalItemsCount: books.length,
+        }
     }
 
     @Get("search")
-    search(@Query("query") query: string, @Query("skip") skip: number = 0, @Query("limit") limit: number = 1000) {
+    search(@Query("query") query: string, @Query("skip") skip: number = 0, @Query("limit") limit: number) {
         return this.bookService.search(query, skip, limit);
     }
 

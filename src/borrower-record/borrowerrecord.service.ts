@@ -34,6 +34,32 @@ export class BorrowerRecordService {
         }); 
     }
 
+    async getRecordNum() {
+        return await this.borrowerRecordModel.count();
+    }
+
+    async getAllRecordsPaginate(page: number) {
+        return await this.borrowerRecordModel.find().skip((page-1)*10).limit(10).populate({
+            path: "books.book",
+            populate: [{
+                path: "reviews.user",
+                populate: {
+                    path: "currentPackage"
+                }
+            },
+            {
+                path: "category"
+            }]
+        }).populate({
+            path: "user",
+            populate: {
+                path: "currentPackage"
+            }
+        }).sort({
+            createdDate: "desc"
+        });
+    }
+
     async getAllRecords(skip: number, limit: number) {
         return await this.borrowerRecordModel.find().skip(skip).limit(limit).populate({
             path: "books.book",

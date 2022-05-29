@@ -24,6 +24,10 @@ export class UserService {
         return await this.userModel.find().populate("currentPackage");
     }
 
+    async getUsersPaginate(page: number) {
+        return await this.userModel.find().populate("currentPackage").skip((page-1)*10).limit(10);
+    }
+
     async getProfile(id: string) {
         return await this.userModel.findById(id).populate("currentPackage");
     }
