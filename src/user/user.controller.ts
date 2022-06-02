@@ -5,12 +5,18 @@ import RoleGuard from "src/auth/guards/role.guard";
 import { Book, RequestedBook } from "src/book/book.model";
 import { ReviewDto } from "src/book/review.dto";
 import { BorrowerRecord, BorrowRecordDto } from "src/borrower-record/borrowerrecord.model";
+import { User } from "./user.model";
 import { UserService } from "./user.service";
 
 @UseGuards(JwtAuthGuard)
 @Controller("user")
 export class UserController {
     constructor(private readonly userService: UserService) {}
+
+    @Post()
+    updateProfile(@Body() dto: User, @Request() req) {
+        return this.userService.updateProfile(dto, req.user.id);
+    }
 
     @Post("addreview/:bookId")
     addReview(@Body() dto: ReviewDto,@Param() param: any, @Request() req) {

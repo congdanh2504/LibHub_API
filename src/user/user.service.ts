@@ -24,6 +24,13 @@ export class UserService {
         return await this.userModel.find().populate("currentPackage");
     }
 
+    async updateProfile(user: User, userId: string) {
+        const me = await this.userModel.findById(userId);
+        me.username = user.username;
+        me.picture = user.picture;
+        await me.save();
+    }
+
     async getUsersPaginate(page: number) {
         return await this.userModel.find().populate("currentPackage").skip((page-1)*10).limit(10);
     }
