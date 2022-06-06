@@ -159,4 +159,8 @@ export class UserService {
             role: "admin"
         });
     }
+
+    async seenNotification(userId: string) {
+        return await this.notificationService.seenNotifications(userId);
+    }
 }

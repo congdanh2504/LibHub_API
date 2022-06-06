@@ -38,6 +38,14 @@ export class NotificationService {
         }
     }
 
+    async seenNotifications(userId: string) {
+        await this.notificationModel.updateMany({user: userId}, {
+            $set: {
+                isSeen : true
+            }
+        })
+    }
+
     async getNotifications(userId: string) {
         return await this.notificationModel.find({ user: userId}).populate({
             path: "user",

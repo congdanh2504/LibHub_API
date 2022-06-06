@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, Req, Request, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Request, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import Role from "src/auth/guards/role.enum";
 import RoleGuard from "src/auth/guards/role.guard";
@@ -92,5 +92,10 @@ export class UserController {
     @Delete("notification/:notificationId")
     deleteNotification(@Param() param: any, @Request() req) {
         return this.userService.deleteNotification(req.user.id, param.notificationId);
+    }
+
+    @Patch("notification")
+    seenNotifications(@Request() req) {
+        return this.userService.seenNotification(req.user.id);
     }
 }
