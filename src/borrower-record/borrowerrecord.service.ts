@@ -217,7 +217,8 @@ export class BorrowerRecordService {
             const book = await this.bookService.getBookById(id);
             res.push(book)
         }
-        
+
+       
         return res.slice(skip, skip + limit);
     }
 }
